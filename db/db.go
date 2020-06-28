@@ -1,13 +1,9 @@
 package db
 
-import "github.com/jinzhu/gorm"
-
-// Todo todo model
-type Todo struct {
-	gorm.Model
-	Text   string
-	Status string
-}
+import (
+	"github.com/Masato4556/kurayami-go/entity"
+	"github.com/jinzhu/gorm"
+)
 
 //DB初期化
 func Init() {
@@ -15,66 +11,10 @@ func Init() {
 	if err != nil {
 		panic("データベース開けず！（dbInit）")
 	}
-	db.AutoMigrate(&Todo{})
+	autoMigration()
 	defer db.Close()
 }
 
-//DB追加
-func Insert(text string, status string) {
-	db, err := gorm.Open("sqlite3", "test.sqlite3")
-	if err != nil {
-		panic("データベース開けず！（dbInsert)")
-	}
-	db.Create(&Todo{Text: text, Status: status})
-	defer db.Close()
-}
-
-//DB更新
-func Update(id int, text string, status string) {
-	db, err := gorm.Open("sqlite3", "test.sqlite3")
-	if err != nil {
-		panic("データベース開けず！（dbUpdate)")
-	}
-	var todo Todo
-	db.First(&todo, id)
-	todo.Text = text
-	todo.Status = status
-	db.Save(&todo)
-	db.Close()
-}
-
-//DB削除
-func Delete(id int) {
-	db, err := gorm.Open("sqlite3", "test.sqlite3")
-	if err != nil {
-		panic("データベース開けず！（dbDelete)")
-	}
-	var todo Todo
-	db.First(&todo, id)
-	db.Delete(&todo)
-	db.Close()
-}
-
-//DB全取得
-func GetAll() []Todo {
-	db, err := gorm.Open("sqlite3", "test.sqlite3")
-	if err != nil {
-		panic("データベース開けず！(dbGetAll())")
-	}
-	var todos []Todo
-	db.Order("created_at desc").Find(&todos)
-	db.Close()
-	return todos
-}
-
-//DB一つ取得
-func GetOne(id int) Todo {
-	db, err := gorm.Open("sqlite3", "test.sqlite3")
-	if err != nil {
-		panic("データベース開けず！(dbGetOne())")
-	}
-	var todo Todo
-	db.First(&todo, id)
-	db.Close()
-	return todo
+func autoMigration() {
+	db.AutoMigrate(&entity.Todo{})
 }
